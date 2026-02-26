@@ -1,0 +1,13 @@
+services:
+  distributed-currency-rate-api:
+    image: ${DOCKER_REGISTRY-}distributedcurrencyrateapi
+    build:
+      context: .
+      dockerfile: DistributedCurrencyRate.Api/Dockerfile
+  distributed-currency-rate-api2:
+    image: ${DOCKER_REGISTRY-}distributedcurrencyrateapi
+    build:
+      context: .
+      dockerfile: DistributedCurrencyRate.Api/Dockerfile
+  distributed-cache:
+    image: redis:8.2

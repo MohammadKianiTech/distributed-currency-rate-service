@@ -1,0 +1,40 @@
+services:
+  distributed-cache:
+    container_name: distributed-cache
+    restart: always
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  distributed-currency-rate-api:
+    container_name: distributed-currency-rate-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5000
+      - ConnectionStrings__Redis=distributed-cache:6379
+    ports:
+      - 5000:5000
+    depends_on:
+      distributed-cache:
+        condition: service_healthy
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+  distributed-currency-rate-api2:
+    container_name: distributed-currency-rate-api2
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=5001
+      - ConnectionStrings__Redis=distributed-cache:6379
+    ports:
+      - 5001:5001
+    depends_on:
+      distributed-cache:
+        condition: service_healthy
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
